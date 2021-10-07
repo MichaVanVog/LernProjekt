@@ -2,6 +2,7 @@
 using System.Text;
 using System.Collections.Generic;
 using System.IO;
+using Bibliothek;
 
 namespace ConsoleApp
 {
@@ -15,17 +16,21 @@ namespace ConsoleApp
 
             var questions = Questions.GetQuestions();
 
-            Console.WriteLine("Назовите Ваше имя");
-            var user = new User(Console.ReadLine());
-            Console.WriteLine($"{user.UserName}, тест начинается:\n");
-
             var questionsAmount = questions.Count;
 
-            Random random = new Random();
+            Console.WriteLine("Назовите Ваше имя");
+            var user = new User(Console.ReadLine());
+            Console.WriteLine($"{user.UserName}, Вам будут заданы {questionsAmount} вопросов:\n");
 
+
+
+            Random random = new();
+            var countQuestionNumber = 0;
             while (questions.Count > 0)
             {
+                countQuestionNumber++;
                 var randomQuestion = random.Next(0, questions.Count);
+                Console.Write($"Вопрос № {countQuestionNumber}: ");
                 Console.WriteLine(questions[randomQuestion].questionText);
 
                 GetUserAnswer(user);

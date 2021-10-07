@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ConsoleApp
+namespace Bibliothek
 {
     public class UserResultsStorage
     {
-        public static string File = @"C:\Users\ipbw\source\repos\Lernen\ConsoleApp\formerDiagnosesFile.txt";
+        private static string file = @"C:\Users\ipbw\source\repos\Lernen\ConsoleApp\formerDiagnosesFile.txt";
+
+        public static string File { get => file; set => file = value; }
+
         public static void Append(User user)
         {
             var textToFile = user.UserName + "*" + user.Diagnose;
@@ -16,12 +19,14 @@ namespace ConsoleApp
         {
             var textFromFile = FileProvider.Get(File);
             var textFromTheFile = textFromFile.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
-            List <User> users = new List<User>();
+            List<User> users = new();
             foreach (var line in textFromTheFile)
             {
                 var data = line.Split('*');
-                var user = new User(data[0]);
-                user.Diagnose = data[1];
+                var user = new User(data[0])
+                {
+                    Diagnose = data[1]
+                };
                 users.Add(user);
             }
             return users;
