@@ -7,6 +7,7 @@ namespace WinFormsApp
     public partial class MainForm : Form
     {
         private Game game;
+        private User user;
 
         public MainForm()
         {
@@ -15,7 +16,7 @@ namespace WinFormsApp
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            var user = new User("неизвестно");
+            user = new User("неизвестно");
             var userInfoForm = new UserInfoForm(user);
             var result = userInfoForm.ShowDialog(this);
             if (result != DialogResult.OK)
@@ -27,6 +28,7 @@ namespace WinFormsApp
                 game = new Game(user);
                 ShowNextQuestion();
             }
+            textBox.Focus();
         }
 
         private void ShowNextQuestion()
@@ -34,22 +36,37 @@ namespace WinFormsApp
             var currentQuestion = game.PopRandomQuestion();
             questionTextLabel.Text = currentQuestion.questionText;
             questionNumberLabel.Text = game.GetQuestionNumberInfo();
+            textBox.Clear();
+            textBox.Focus();
         }
 
         private void NextButton_Click(object sender, EventArgs e)
         {
+            var isValid = User.IsValid(textBox.Text, out var userAnswer, out var errorMessage);
+            if (!isValid)
+            {
+                MessageBox.Show(errorMessage);
+                return;
+            }
             textBox.Focus();
-            var answer = Convert.ToInt32(textBox.Text);
-            game.AcceptAnswer(answer);
+            game.AcceptAnswer(userAnswer);
 
             textBox.Clear();
             if (game.End())
             {
                 var diagnose = game.CalculateDiagnose();
                 MessageBox.Show(diagnose);
+
+                UserResultsStorage.Append(user);
                 return;
             }
             ShowNextQuestion();
+        }
+
+        private void показатьСтатистикуToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var resultsForm = new UserResultsForm();
+            resultsForm.ShowDialog(this);
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace Bibliothek
+﻿using System;
+
+namespace Bibliothek
 {
     public class User
     {
@@ -16,6 +18,28 @@
         public void CalcRightAnswers()
         {
             CalculatedAnswers++;
+        }
+
+        public static bool IsValid(string answer, out int userAnswer, out string message)
+        {
+            userAnswer = 0;
+            message = "";
+            try
+            {
+                userAnswer = Convert.ToInt32(answer);
+                return true;
+            }
+            catch (FormatException)
+            {
+
+                message = "Введите число";
+                return false;
+            }
+            catch (OverflowException)
+            {
+                message = "Введите число меньшее чем 10^9!";
+                return false;
+            }
         }
     }
 }

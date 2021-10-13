@@ -42,11 +42,13 @@ namespace ConsoleApp
 
             static int GetUserAnswer(User user)
             {
-                while (int.TryParse(Console.ReadLine(), out user.UserAnswer) == false)
+                var isValid = User.IsValid(Console.ReadLine(), out var userAnswer, out var errorMessage);
+                while (!isValid)
                 {
-                    Console.WriteLine("Введите число не больше 3 цифр!");
+                    Console.WriteLine(errorMessage);
+                    isValid = User.IsValid(Console.ReadLine(), out userAnswer, out errorMessage);
                 }
-                return user.UserAnswer;
+                return userAnswer;
             }
 
             static void GetTextFromFile(List<User> users)
