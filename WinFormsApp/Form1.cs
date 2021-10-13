@@ -16,8 +16,17 @@ namespace WinFormsApp
         private void MainForm_Load(object sender, EventArgs e)
         {
             var user = new User("неизвестно");
-            game = new Game(user);
-            ShowNextQuestion();
+            var userInfoForm = new UserInfoForm(user);
+            var result = userInfoForm.ShowDialog(this);
+            if (result != DialogResult.OK)
+            {
+                Close();
+            }
+            else
+            {
+                game = new Game(user);
+                ShowNextQuestion();
+            }
         }
 
         private void ShowNextQuestion()
