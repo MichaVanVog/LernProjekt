@@ -43,7 +43,7 @@ namespace WinFormsApp
             this.nextButton.TabIndex = 0;
             this.nextButton.Text = "Далее";
             this.nextButton.UseVisualStyleBackColor = true;
-            this.nextButton.Click += new System.EventHandler(this.nextButton_Click);
+            this.nextButton.Click += new System.EventHandler(this.NextButton_Click);
             // 
             // questionNumberLabel
             // 

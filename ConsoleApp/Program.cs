@@ -1,50 +1,33 @@
 ﻿using System;
 using System.Text;
 using System.Collections.Generic;
-using System.IO;
 using Bibliothek;
 
 namespace ConsoleApp
 {
     class Program
     {
-            
-        static void Main(string[] args)
+
+        static void Main()
         {
             Console.OutputEncoding = Encoding.Unicode;
             Console.InputEncoding = Encoding.Unicode;
-
-            var questions = Questions.GetQuestions();
-
-            var questionsAmount = questions.Count;
-
             Console.WriteLine("Назовите Ваше имя");
             var user = new User(Console.ReadLine());
+            var game = new Game(user);
+            var questionsAmount = game.GetQuestionsCount();
             Console.WriteLine($"{user.UserName}, Вам будут заданы {questionsAmount} вопросов:\n");
 
-
-
-            Random random = new();
-            var countQuestionNumber = 0;
-            while (questions.Count > 0)
+            while (questionsAmount > 0)
             {
-                countQuestionNumber++;
-                var randomQuestion = random.Next(0, questions.Count);
-                Console.Write($"Вопрос № {countQuestionNumber}: ");
-                Console.WriteLine(questions[randomQuestion].questionText);
-
-                GetUserAnswer(user);
-
-                if (user.UserAnswer == questions[randomQuestion].answerNumber)
-                {
-                    user.CalcRightAnswers();
-                }
-                questions.RemoveAt(randomQuestion);
+                var currentQuestion = game.PopRandomQuestion();
+                Console.Write(game.GetQuestionNumberInfo());
+                Console.WriteLine(currentQuestion.questionText);
+                var userAnswer = GetUserAnswer(user);
+                game.AcceptAnswer(userAnswer);
             }
 
-            DiagnoseCalculator.Calculate(user, questionsAmount);
-
-            Console.WriteLine($"{user.UserName}, Ваш диагноз: {user.Diagnose}");
+            Console.WriteLine(game.CalculateDiagnose());
             UserResultsStorage.Append(user);
 
             Console.WriteLine($"Хотите посмотреть результаты всех предыдущих тестов?");

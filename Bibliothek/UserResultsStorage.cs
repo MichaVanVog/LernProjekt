@@ -1,35 +1,37 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 
 namespace Bibliothek
 {
     public class UserResultsStorage
     {
-        private static string file = @"C:\Users\ipbw\source\repos\Lernen\ConsoleApp\formerDiagnosesFile.txt";
+        private static string fileForUserResults = @"C:\Users\ipbw\source\repos\Lernen\formerDiagnosesFile.json";
 
-        public static string File { get => file; set => file = value; }
+        public static string FileForUserResults { get => fileForUserResults; set => fileForUserResults = value; }
 
         public static void Append(User user)
         {
-            var textToFile = user.UserName + "*" + user.Diagnose;
-            FileProvider.Append(File, textToFile);
+            var userResults = GetAll();
+            userResults.Add(user);
+            Save(userResults);
         }
 
         public static List<User> GetAll()
         {
-            var textFromFile = FileProvider.Get(File);
-            var textFromTheFile = textFromFile.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
-            List<User> users = new();
-            foreach (var line in textFromTheFile)
+            if(!FileProvider.Exists(FileForUserResults))
             {
-                var data = line.Split('*');
-                var user = new User(data[0])
-                {
-                    Diagnose = data[1]
-                };
-                users.Add(user);
+                return new List<User>();
             }
-            return users;
+            var textFromFile = FileProvider.Get(FileForUserResults);
+            var userResults = JsonConvert.DeserializeObject<List<User>>(textFromFile);
+            return userResults;
+        }
+
+        static void Save(List<User> userResults)
+        {
+            var jsonData = JsonConvert.SerializeObject(userResults, Formatting.Indented);
+            FileProvider.Replace(FileForUserResults, jsonData);
         }
     }
 }

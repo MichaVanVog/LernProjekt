@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Bibliothek;
 
@@ -13,11 +6,7 @@ namespace WinFormsApp
 {
     public partial class MainForm : Form
     {
-        private List<Questions> questions;
-        private Questions currentQuestion;
-        private User user;
-        private int countQuestions;
-        private int questionsAmount;
+        private Game game;
 
         public MainForm()
         {
@@ -26,37 +15,29 @@ namespace WinFormsApp
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            
-            user = new User("неизвестно");
-            questions = Questions.GetQuestions();
-            questionsAmount = questions.Count;
+            var user = new User("неизвестно");
+            game = new Game(user);
             ShowNextQuestion();
         }
 
         private void ShowNextQuestion()
         {
-            countQuestions++;
-            Random random = new();
-            var randomQuestion = random.Next(0, questions.Count);
-            currentQuestion = questions[randomQuestion];
+            var currentQuestion = game.PopRandomQuestion();
             questionTextLabel.Text = currentQuestion.questionText;
-            questionNumberLabel.Text = $"Вопрос № {countQuestions}";
+            questionNumberLabel.Text = game.GetQuestionNumberInfo();
         }
 
-        private void nextButton_Click(object sender, EventArgs e)
+        private void NextButton_Click(object sender, EventArgs e)
         {
             textBox.Focus();
             var answer = Convert.ToInt32(textBox.Text);
-            if (answer == currentQuestion.answerNumber)
-            {
-                user.CalcRightAnswers();
-            }
-            questions.Remove(currentQuestion);
+            game.AcceptAnswer(answer);
+
             textBox.Clear();
-            if (questions.Count==0)
+            if (game.End())
             {
-                DiagnoseCalculator.Calculate(user, questionsAmount);
-                MessageBox.Show(user.Diagnose, "Ваш Диагноз", MessageBoxButtons.OK);
+                var diagnose = game.CalculateDiagnose();
+                MessageBox.Show(diagnose);
                 return;
             }
             ShowNextQuestion();
